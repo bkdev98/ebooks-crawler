@@ -30,7 +30,7 @@ export function crawl(payload) {
 
 const crawlProductRequest = payload => ({ type: CRAWL_PRODUCT_REQUEST, payload });
 const crawlProductSuccess = payload => ({ type: CRAWL_PRODUCT_SUCCESS, payload });
-const crawlProductFailure = error => ({ type: CRAWL_PRODUCT_FAILURE, error });
+const crawlProductFailure = payload => ({ type: CRAWL_PRODUCT_FAILURE, payload });
 
 export function crawlProduct(payload) {
   return async dispatch => {

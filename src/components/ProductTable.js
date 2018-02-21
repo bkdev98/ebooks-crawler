@@ -20,13 +20,26 @@ import Tooltip from 'material-ui/Tooltip';
 import DownloadIcon from 'material-ui-icons/CloudDownload';
 import CopyIcon from 'material-ui-icons/ContentCopy';
 import FilterListIcon from 'material-ui-icons/FilterList';
+import RecrawlProductIcon from 'material-ui-icons/Refresh';
 import { lighten } from 'material-ui/styles/colorManipulator';
 import { CircularProgress } from 'material-ui/Progress';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { openSnackbar } from '../actions';
+import {
+  openSnackbar,
+  crawlProduct,
+} from '../actions';
 
 class ProductTableHead extends React.Component {
+  state = {
+    checked: false,
+  }
+
+  handleCheckAll = (event, checked) => {
+    this.props.onSelectAllClick(event, checked);
+    this.setState({ checked: !this.state.checked });
+  }
+
   render() {
     const { onSelectAllClick, numSelected, rowCount } = this.props;
 
@@ -36,8 +49,8 @@ class ProductTableHead extends React.Component {
           <TableCell padding="checkbox">
             <Checkbox
               indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={numSelected === rowCount}
-              onChange={onSelectAllClick}
+              checked={this.state.checked}
+              onChange={this.handleCheckAll}
               color="primary"
             />
           </TableCell>
@@ -88,7 +101,7 @@ const toolbarStyles = theme => ({
 });
 
 let ProductTableToolbar = props => {
-  const { numSelected, classes, handleDownload, handleCopy, selectedUrls } = props;
+  const { numSelected, classes, handleDownload, handleCopy, selectedUrls, handleRecrawlProduct, showRecrawlButton, productsLength } = props;
 
   return (
     <Toolbar
@@ -98,14 +111,14 @@ let ProductTableToolbar = props => {
     >
       <div className={classes.title}>
         {numSelected > 0 ? (
-          <Typography variant="subheading">{numSelected} selected</Typography>
+          <Typography variant="subheading">{numSelected}/{productsLength} selected</Typography>
         ) : (
           <Typography variant="title">Products</Typography>
         )}
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
-        {numSelected > 0 && (
+        {numSelected > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <Tooltip title="Copy">
               <CopyToClipboard text={selectedUrls} onCopy={handleCopy}>
@@ -120,6 +133,12 @@ let ProductTableToolbar = props => {
               </IconButton>
             </Tooltip>
           </div>
+        ) : showRecrawlButton && (
+          <Tooltip title="Recrawl Product">
+            <IconButton aria-label="Recrawl Product" onClick={handleRecrawlProduct}>
+              <RecrawlProductIcon />
+            </IconButton>
+          </Tooltip>
         )}
       </div>
     </Toolbar>
@@ -144,6 +163,10 @@ const styles = theme => ({
   tableWrapper: {
     overflowX: 'auto',
   },
+  retryButton: {
+    cursor: 'pointer',
+    color: '#ff4081',
+  },
 });
 
 class ProductTable extends React.Component {
@@ -162,7 +185,7 @@ class ProductTable extends React.Component {
 
   handleSelectAllClick = (event, checked) => {
     if (checked) {
-      this.setState({ selected: this.props.products.map(n => n.googleDriveUri && n.id) }, () => {
+      this.setState({ selected: this.props.products.filter(n => n.status === 'Success').map(n => n.id) }, () => {
         let urls = '';
         this.state.selected.forEach(id => {
           const product = this.props.products.find(p => p.id === id);
@@ -174,8 +197,9 @@ class ProductTable extends React.Component {
         this.setState({ selectedUrls: urls });
       });
       return;
+    } else {
+      this.setState({ selected: [] });
     }
-    this.setState({ selected: [] });
   };
 
   handleClick = (event, id) => {
@@ -231,6 +255,14 @@ class ProductTable extends React.Component {
     this.props.openSnackbar({ message: 'URIs copied!' });
   }
 
+  handleRecrawl = () => {
+    this.props.products.forEach(product => {
+      if (product.status !== 'Success') {
+        this.props.crawlProduct(product);
+      }
+    });
+  }
+
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
@@ -245,6 +277,9 @@ class ProductTable extends React.Component {
           handleCopy={this.handleCopy}
           handleDownload={this.handleDownload}
           numSelected={selected.length}
+          showRecrawlButton={products.findIndex(p => p.status !== 'Success') !== -1}
+          handleRecrawlProduct={this.handleRecrawl}
+          productsLength={products.length}
         />
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
@@ -273,7 +308,12 @@ class ProductTable extends React.Component {
                     <TableCell>
                       <a href={`https://nguyenhang.vn/${n.uri}`} target="_blank">{n.title}</a>
                     </TableCell>
-                    <TableCell>{n.status}</TableCell>
+                    <TableCell>
+                      {n.status !== 'Failure'
+                        ? <p style={{ color: n.status === 'Success' ? '#3f51b5' : '#000' }}>{n.status}</p>
+                        : <a className={classes.retryButton} onClick={() => this.props.crawlProduct(n)}>{n.status}</a>
+                      }
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -314,4 +354,5 @@ ProductTable.propTypes = {
 
 export default withStyles(styles)(connect(null, {
   openSnackbar,
+  crawlProduct,
 })(ProductTable));

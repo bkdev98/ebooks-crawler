@@ -20,6 +20,8 @@ export default (state = INITIAL_STATE, action) => {
     case CRAWL_REQUEST:
       return {
         ...state,
+        categoryLabel: null,
+        products: [],
         uri: action.uri,
         loading: true,
         error: null,
@@ -56,12 +58,10 @@ export default (state = INITIAL_STATE, action) => {
     case CRAWL_PRODUCT_FAILURE:
       return {
         ...state,
-        products: action.payload && action.payload.id
-          ? state.products.map(pro => pro.id === action.payload.id
-            ? { ...action.payload, status: 'Failure' }
-            : pro
-          )
-          : state.products,
+        products: state.products.map(pro => pro.id === action.payload.id
+          ? { ...action.payload, status: 'Failure' }
+          : pro
+        )
       };
     default:
       return state;
