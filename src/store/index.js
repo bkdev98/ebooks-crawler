@@ -12,6 +12,7 @@ const config = {
   whitelist: [
     'app',
     'auth',
+    'crawl',
   ],
 };
 

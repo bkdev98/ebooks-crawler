@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import Typography from 'material-ui/Typography';
 import AppBar from 'material-ui/AppBar';
@@ -57,14 +56,10 @@ class AppNavBar extends Component {
           </Typography>
           {auth.loggedIn ? (
             <div>
-              <IconButton
-                aria-owns={open ? 'menu-appbar' : null}
-                aria-haspopup="true"
-                onClick={this.handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
+              <Button className={classes.button} size="small" onClick={this.handleMenu}>
+                <AccountCircle className={classes.leftIcon} />
+                {auth.user.displayName}
+              </Button>
               <Menu
                 id="menu-appbar"
                 anchorEl={this.state.anchorEl}
@@ -79,16 +74,11 @@ class AppNavBar extends Component {
                 open={open}
                 onClose={this.handleClose}
               >
-                <Link style={{ textDecoration: 'none', outline: 0 }} to='/profile'>
-                  <MenuItem onClick={this.handleClose}>
-                  Profile
-                  </MenuItem>
-                </Link>
                 <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
               </Menu>
             </div>
           ) : (
-            <Button style={{ color: '#FFFFFF' }} className={classes.button} onClick={this.props.login}>
+            <Button className={classes.button} onClick={this.props.login}>
               Login with Google
             </Button>
           )}
@@ -128,6 +118,10 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit,
+    color: '#FFFFFF',
+  },
+  leftIcon: {
+    marginRight: theme.spacing.unit,
   },
 });
 

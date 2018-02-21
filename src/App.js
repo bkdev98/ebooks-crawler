@@ -14,6 +14,7 @@ import store from './store';
 import Screens from './screens';
 import AppDrawer from './components/AppDrawer';
 import AppNavBar from './components/AppNavBar';
+import AppSnackBar from './components/AppSnackBar';
 
 class App extends Component {
   state = {
@@ -37,6 +38,7 @@ class App extends Component {
           <Router>
             <div className={classes.root}>
               <div className={classes.appFrame}>
+                <AppSnackBar />
                 <AppNavBar
                   isOpen={this.state.showDrawer}
                   handleDrawerOpen={this.handleDrawerOpen}
@@ -49,7 +51,6 @@ class App extends Component {
                   <Route exact path="/" component={Screens.Home} />
                   <Route path="/crawler" component={Screens.Crawler} />
                   <Route path="/about" component={Screens.About} />
-                  <Route path="/profile" component={Screens.Profile} />
                 </main>
               </div>
             </div>
@@ -62,8 +63,6 @@ class App extends Component {
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flex: 1,
     width: '100%',
     height: '100vh',
     zIndex: 1,
@@ -71,14 +70,13 @@ const styles = theme => ({
   },
   appFrame: {
     display: 'flex',
-    flex: 1,
+    '-webkit-flex': '1 1 auto',
+    overflowY: 'auto',
     position: 'relative',
     width: '100%',
     height: '100%',
   },
   content: {
-    display: 'flex',
-    flex: 1,
     width: '100%',
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
