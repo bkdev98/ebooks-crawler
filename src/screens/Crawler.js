@@ -75,35 +75,41 @@ class Crawler extends Component {
           <Typography variant="display1" component="h3">
             Crawl ebooks
           </Typography>
-          <Grid container>
-            <Grid item xs={12} md={10}>
-              <FormControl className={classes.formControl} error={this.state.error.length > 0} aria-describedby="name-error-text">
-                <TextField
-                  id="url-input"
-                  label="Enter URL"
-                  placeholder="https://nguyenhang.vn/mcgraw-hill-d128l4.html"
-                  className={classes.textField}
-                  margin="normal"
-                  value={this.state.uri}
-                  onChange={event => this.setState({ uri: event.target.value })}
+          <FormControl className={classes.formControl} error={this.state.error.length > 0} aria-describedby="name-error-text">
+            <Grid container>
+              <Grid item xs={12} md={10}>
+                  <TextField
+                    id="url-input"
+                    label="Enter URL"
+                    placeholder="https://nguyenhang.vn/mcgraw-hill-d128l4.html"
+                    className={classes.textField}
+                    margin="normal"
+                    value={this.state.uri}
+                    onChange={event => this.setState({ uri: event.target.value })}
+                    disabled={loading}
+                    onKeyPress={(ev) => {
+                      if (ev.key === 'Enter') {
+                        this.handleCrawl();
+                        ev.preventDefault();
+                      }
+                    }}
+                  />
+                  <FormHelperText style={{ marginTop: -5, paddingBottom: 5 }} id="name-error-text">{this.state.error}</FormHelperText>
+              </Grid>
+              <Grid item xs={12} md={2} className={classes.buttonContainer}>
+                <Button
+                  className={classes.button}
+                  variant="raised"
+                  color="primary"
+                  onClick={this.handleCrawl}
                   disabled={loading}
-                />
-                <FormHelperText style={{ marginTop: -5, paddingBottom: 5 }} id="name-error-text">{this.state.error}</FormHelperText>
-              </FormControl>
+                >
+                  {!loading ? 'Start Crawler' : 'Crawling...'}
+                  <CrawlerIcon className={classes.buttonIcon} />
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={2} className={classes.buttonContainer}>
-              <Button
-                className={classes.button}
-                variant="raised"
-                color="primary"
-                onClick={this.handleCrawl}
-                disabled={loading}
-              >
-                {!loading ? 'Start Crawler' : 'Crawling...'}
-                <CrawlerIcon className={classes.buttonIcon} />
-              </Button>
-            </Grid>
-          </Grid>
+          </FormControl>
           <div className={classes.supportedContainer}>
             <Chip
               avatar={<Avatar>NH</Avatar>}
