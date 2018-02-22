@@ -14,3 +14,5 @@ export const CRAWL_FAILURE = 'crawl_failure';
 export const CRAWL_PRODUCT_REQUEST = 'crawl_product_request';
 export const CRAWL_PRODUCT_SUCCESS = 'crawl_product_success';
 export const CRAWL_PRODUCT_FAILURE = 'crawl_product_failure';
+
+export const SORT_PRODUCT_BY_STATUS = 'sort_product_by_status';

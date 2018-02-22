@@ -6,6 +6,8 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
+import Avatar from 'material-ui/Avatar';
+import Chip from 'material-ui/Chip';
 import CrawlerIcon from 'material-ui-icons/FreeBreakfast';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 
@@ -38,6 +40,14 @@ const styles = theme => ({
   buttonIcon: {
     marginLeft: theme.spacing.unit,
   },
+  supportedContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chip: {
+    marginLeft: theme.spacing.unit,
+  },
 });
 
 class Crawler extends Component {
@@ -62,8 +72,8 @@ class Crawler extends Component {
     return (
       <div>
         <Paper className={classes.root} elevation={1}>
-          <Typography variant="headline" component="h3">
-            Crawl ebooks from category
+          <Typography variant="display1" component="h3">
+            Crawl ebooks
           </Typography>
           <Grid container>
             <Grid item xs={12} md={10}>
@@ -78,7 +88,7 @@ class Crawler extends Component {
                   onChange={event => this.setState({ uri: event.target.value })}
                   disabled={loading}
                 />
-                <FormHelperText id="name-error-text">{this.state.error}</FormHelperText>
+                <FormHelperText style={{ marginTop: -5, paddingBottom: 5 }} id="name-error-text">{this.state.error}</FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={12} md={2} className={classes.buttonContainer}>
@@ -94,6 +104,14 @@ class Crawler extends Component {
               </Button>
             </Grid>
           </Grid>
+          <div className={classes.supportedContainer}>
+            <Chip
+              avatar={<Avatar>NH</Avatar>}
+              label="nguyenhang.vn"
+              onClick={() => window.open('https://nguyenhang.vn', '_blank')}
+              className={classes.chip}
+            />
+          </div>
         </Paper>
         {categoryLabel && (
           <Paper className={classes.root} elevation={1}>

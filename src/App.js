@@ -15,6 +15,7 @@ import Screens from './screens';
 import AppDrawer from './components/AppDrawer';
 import AppNavBar from './components/AppNavBar';
 import AppSnackBar from './components/AppSnackBar';
+import Footer from './components/Footer';
 
 class App extends Component {
   state = {
@@ -51,6 +52,7 @@ class App extends Component {
                   <Route exact path="/" component={Screens.Home} />
                   <Route path="/crawler" component={Screens.Crawler} />
                   <Route path="/about" component={Screens.About} />
+                  <Footer />
                 </main>
               </div>
             </div>
@@ -63,8 +65,10 @@ class App extends Component {
 
 const styles = theme => ({
   root: {
+    display: 'flex',
+    '-webkit-flex': '1 1 auto',
+    overflowY: 'auto',
     width: '100%',
-    height: '100vh',
     zIndex: 1,
     overflow: 'hidden',
   },
@@ -72,9 +76,9 @@ const styles = theme => ({
     display: 'flex',
     '-webkit-flex': '1 1 auto',
     overflowY: 'auto',
+    height: '100vh',
     position: 'relative',
     width: '100%',
-    height: '100%',
   },
   content: {
     width: '100%',

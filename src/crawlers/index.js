@@ -17,7 +17,7 @@ export async function crawlCategory(uri) {
     $('.header span label').filter(function(){
         const data = $(this);
         const categoryLabel = data.text();
-        result.categoryLabel = categoryLabel;
+        return result.categoryLabel = categoryLabel;
     });
     $('.sanpham_cell .tensanpham_cot a').each(function (index, value) {
       const data = $(this);
@@ -63,11 +63,11 @@ export async function crawlProductDownload(product) {
     const $ = await rp(options);
     $('.noidungchitiet p span strong').first().filter(function () {
       const data = $(this);
-      result.fileName = data.text();
+      return result.fileName = data.text();
     });
     $('.noidungchitiet p span a').first().filter(function () {
       const data = $(this);
-      result.googleDriveUri = `https://drive${data.attr('href').split('drive')[1]}`;
+      return result.googleDriveUri = `https://drive${data.attr('href').split('drive')[1]}`;
     });
   } catch (error) {
     throw error;

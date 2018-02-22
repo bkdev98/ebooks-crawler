@@ -5,6 +5,7 @@ import {
   CRAWL_PRODUCT_FAILURE,
   CRAWL_PRODUCT_REQUEST,
   CRAWL_PRODUCT_SUCCESS,
+  SORT_PRODUCT_BY_STATUS,
 } from './types';
 import { crawlCategory, crawlProductDownload } from '../crawlers';
 import { openSnackbar } from './snackbar';
@@ -44,3 +45,5 @@ export function crawlProduct(payload) {
     }
   };
 }
+
+export const sortProductByStatus = order => ({ type: SORT_PRODUCT_BY_STATUS, order });

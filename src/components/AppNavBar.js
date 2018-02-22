@@ -64,12 +64,12 @@ class AppNavBar extends Component {
                 id="menu-appbar"
                 anchorEl={this.state.anchorEl}
                 anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                  vertical: 'bottom',
+                  horizontal: 'left',
                 }}
                 transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                  vertical: 'bottom',
+                  horizontal: 'left',
                 }}
                 open={open}
                 onClose={this.handleClose}

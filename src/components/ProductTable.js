@@ -10,24 +10,24 @@ import Table, {
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
 } from 'material-ui/Table';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
 import Checkbox from 'material-ui/Checkbox';
 import IconButton from 'material-ui/IconButton';
 import Tooltip from 'material-ui/Tooltip';
 import DownloadIcon from 'material-ui-icons/CloudDownload';
 import CopyIcon from 'material-ui-icons/ContentCopy';
-import FilterListIcon from 'material-ui-icons/FilterList';
 import RecrawlProductIcon from 'material-ui-icons/Refresh';
 import { lighten } from 'material-ui/styles/colorManipulator';
-import { CircularProgress } from 'material-ui/Progress';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { LinearProgress } from 'material-ui/Progress';
 
 import {
   openSnackbar,
   crawlProduct,
+  sortProductByStatus,
 } from '../actions';
 
 class ProductTableHead extends React.Component {
@@ -41,7 +41,7 @@ class ProductTableHead extends React.Component {
   }
 
   render() {
-    const { onSelectAllClick, numSelected, rowCount } = this.props;
+    const { numSelected, order, orderByStatus, rowCount } = this.props;
 
     return (
       <TableHead>
@@ -60,8 +60,22 @@ class ProductTableHead extends React.Component {
           <TableCell>
             Title
           </TableCell>
-          <TableCell>
-            Status
+          <TableCell
+            sortDirection={orderByStatus ? order : false}
+          >
+            <Tooltip
+              title="Sort"
+              placement='bottom-start'
+              enterDelay={300}
+            >
+              <TableSortLabel
+                active={orderByStatus}
+                direction={order}
+                onClick={this.props.onRequestSort}
+              >
+                Status
+              </TableSortLabel>
+            </Tooltip>
           </TableCell>
         </TableRow>
       </TableHead>
@@ -73,6 +87,9 @@ ProductTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
   rowCount: PropTypes.number.isRequired,
+  order: PropTypes.string.isRequired,
+  orderByStatus: PropTypes.bool.isRequired,
+  onRequestSort: PropTypes.func.isRequired,
 };
 
 const toolbarStyles = theme => ({
@@ -175,7 +192,7 @@ class ProductTable extends React.Component {
 
     this.state = {
       order: 'asc',
-      orderBy: 'calories',
+      orderByStatus: false,
       selected: [],
       selectedUrls: '',
       page: 0,
@@ -233,6 +250,19 @@ class ProductTable extends React.Component {
     });
   };
 
+  handleSortByStatus = event => {
+    const orderByStatus = true;
+    let order = 'desc';
+
+    if (orderByStatus && this.state.order === 'desc') {
+      order = 'asc';
+    }
+
+    this.props.sortProductByStatus(order);
+
+    this.setState({ orderByStatus, order });
+  };
+
   handleChangePage = (event, page) => {
     this.setState({ page });
   };
@@ -266,8 +296,8 @@ class ProductTable extends React.Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, products } = this.props;
-    const { selected, rowsPerPage, page, selectedUrls } = this.state;
+    const { classes, products, productCrawled } = this.props;
+    const { selected, rowsPerPage, page, selectedUrls, orderByStatus, order } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, products.length - page * rowsPerPage);
 
     return (
@@ -281,12 +311,16 @@ class ProductTable extends React.Component {
           handleRecrawlProduct={this.handleRecrawl}
           productsLength={products.length}
         />
+        {productCrawled < products.length && <LinearProgress variant="determinate" value={productCrawled / products.length * 100} />}
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <ProductTableHead
               numSelected={selected.length}
               onSelectAllClick={this.handleSelectAllClick}
               rowCount={products.length}
+              orderByStatus={orderByStatus}
+              order={order}
+              onRequestSort={this.handleSortByStatus}
             />
             <TableBody>
               {products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(n => {
@@ -352,7 +386,10 @@ ProductTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(connect(null, {
+export default withStyles(styles)(connect(state => ({
+  productCrawled: state.crawl.productCrawled,
+}), {
   openSnackbar,
   crawlProduct,
+  sortProductByStatus,
 })(ProductTable));

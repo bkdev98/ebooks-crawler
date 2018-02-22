@@ -5,6 +5,7 @@ import {
   CRAWL_PRODUCT_FAILURE,
   CRAWL_PRODUCT_REQUEST,
   CRAWL_PRODUCT_SUCCESS,
+  SORT_PRODUCT_BY_STATUS,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -13,6 +14,7 @@ const INITIAL_STATE = {
   error: null,
   loading: false,
   products: [],
+  productCrawled: 0,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -25,6 +27,7 @@ export default (state = INITIAL_STATE, action) => {
         uri: action.uri,
         loading: true,
         error: null,
+        productCrawled: 0,
       };
     case CRAWL_SUCCESS:
       return {
@@ -45,7 +48,7 @@ export default (state = INITIAL_STATE, action) => {
         products: state.products.map(pro => pro.id === action.payload.id
           ? { ...action.payload, status: 'Fetching' }
           : pro
-        )
+        ),
       };
     case CRAWL_PRODUCT_SUCCESS:
       return {
@@ -53,7 +56,8 @@ export default (state = INITIAL_STATE, action) => {
         products: state.products.map(pro => pro.id === action.payload.id
           ? { ...action.payload, status: 'Success' }
           : pro
-        )
+        ),
+        productCrawled: state.productCrawled + 1,
       };
     case CRAWL_PRODUCT_FAILURE:
       return {
@@ -61,7 +65,14 @@ export default (state = INITIAL_STATE, action) => {
         products: state.products.map(pro => pro.id === action.payload.id
           ? { ...action.payload, status: 'Failure' }
           : pro
-        )
+        ),
+      };
+    case SORT_PRODUCT_BY_STATUS:
+      return {
+        ...state,
+        products: action.order === 'desc'
+          ? state.products.sort((a, b) => (b.status < a.status ? -1 : 1))
+          : state.products.sort((a, b) => (a.status < b.status ? -1 : 1)),
       };
     default:
       return state;
